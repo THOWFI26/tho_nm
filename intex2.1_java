@@ -1,0 +1,47 @@
+document.getElementById('getWeather').addEventListener('click', getWeather);
+
+function getWeather() {
+    const city = document.getElementById('city').value;
+    const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+
+    if (!city) {
+        alert('Please enter a city name.');
+        return;
+    }
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.cod === 200) {
+                displayWeather(data);
+            } else {
+                alert('City not found!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to fetch weather data. Please try again.');
+        });
+}
+
+function displayWeather(data) {
+    const { name, main, weather, wind } = data;
+
+    document.getElementById('city-name').textContent = name;
+    document.getElementById('temperature').textContent = `Temperature: ${main.temp}°C`;
+    document.getElementById('description').textContent = `Condition: ${weather[0].description}`;
+    document.getElementById('humidity').textContent = `Humidity: ${main.humidity}%`;
+    document.getElementById('wind-speed').textContent = `Wind Speed: ${wind.speed} m/s`;
+    let backgroundImage = '';
+    if (weather[0].main === 'Clear') {
+        backgroundImage = 'sunny.jpg';
+    } else if (weather[0].main === 'Rain') {
+        backgroundImage = 'rainy.jpg';
+    } else {
+        backgroundImage = 'cloudy.jpg';
+    }
+
+    document.body.style.backgroundImage = `url('${backgroundImage}')`;
+}
